@@ -1,10 +1,7 @@
-import ClickGui from "./ClickGui.svelte";
+import ApplicationView from "./application/Window.svelte"
 
-const app = new ClickGui({
-	target: document.body,
-	props: {
-
-	}
+// View of the rendered application.
+export const view = new ApplicationView({
+    target: document.body,
+    props: {}
 });
-
-export default app;
