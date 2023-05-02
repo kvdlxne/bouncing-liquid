@@ -1,4 +1,4 @@
-import ApplicationView from "./application/Window.svelte"
+import ApplicationView from "./appearance/Window.svelte"
 
 // View of the rendered application.
 export const view = new ApplicationView({
