@@ -7,14 +7,18 @@
     // The width of the rendered window.
     const WINDOW_WIDTH = 760;
 
-    //
-    let x = 0;
+    let isDefaultPositioned = true;
 
     //
-    let y = 0;
+    let x;
+
+    //
+    let y;
 
     const handleMoveWindow = (event) => {
         const detail = event.detail;
+
+        isDefaultPositioned = detail.inDefaultPosition;
 
         //
         x = detail.x;
@@ -23,37 +27,41 @@
 
 </script>
 
-<div class="window-container">
-    <div class="window" style="--window-height:{WINDOW_HEIGHT}px;--window-width:{WINDOW_WIDTH}px;--x:{x}px;--y:{y}px;">
+<div class="window">
+    <div class="window-container {isDefaultPositioned ? 'centered' : 'moveable'}"
+         style="--height: {WINDOW_HEIGHT}px; --width: {WINDOW_WIDTH}px; --x: {x}px; --y: {y}px;">
         <Header height="{WINDOW_HEIGHT}" width="{WINDOW_WIDTH}" on:moveWindow={handleMoveWindow}/>
     </div>
 </div>
 
 <style lang="scss">
+    // TODO simplify
     @import "../clickgui/src/styles/colors";
-
-    .window-container {
-        height: 100vh;
-        width: 100vw;
-        position: relative;
-        overflow: hidden;
-    }
+    @import "../clickgui/src/styles/variables";
 
     .window {
-        position: absolute;
-        background-color: $windowContentBackgroundColor;
-        height: var(--window-height);
-        width: var(--window-width);
-        left: var(--x);
-        top: var(--y);
-        $rounded: 0px;
-        border-radius: $rounded;
+        height: 100vh;
+        overflow: hidden;
+        user-select: none;
+        width: 100vw;
 
-        //$x: var(--x, 0px);
-        // TODO How to use CSS variables in SCSS?
-        // https://sass-lang.com/documentation/breaking-changes/css-vars
-        //@if 0px == $x {
-        //    background-color: red;
-        //}
+        &-container {
+            background-color: $windowContentBackgroundColor;
+            border-radius: $windowBorderRadius;
+            height: var(--height);
+            position: absolute;
+            width: var(--width);
+        }
+
+        .centered {
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        .moveable {
+            left: var(--x);
+            top: var(--y);
+        }
     }
 </style>

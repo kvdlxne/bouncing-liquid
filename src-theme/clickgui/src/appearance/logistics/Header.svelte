@@ -1,5 +1,6 @@
 <script>
     import { createEventDispatcher } from "svelte";
+    import Navigation from "./Navigation.svelte";
 
     // The height of the rendered window.
     export let height = 0;
@@ -25,25 +26,59 @@
     //
     const dispatch = createEventDispatcher();
 
-    //
+    // Determines whether the window is in the default position.
+    let isDefaultPositioned = true;
+
+    // Determines whether the window is currently moving.
     let isMoving = false;
 
-    //
+    // The initial position of the window on the X-axis.
     let initialX = 0;
 
-    //
+    // The initial position of the window on the Y-axis.
     let initialY = 0;
 
-    //
-    let currentY = 0;
-
-    //
+    // The current position of the window on the X-axis.
     let currentX = 0;
 
+    // The current position of the window on the Y-axis.
+    let currentY = 0;
+
+    /**
+     * Updates the initial position of the mouse cursor.
+     *
+     * @param event MouseEvent
+     */
+    const updateInitialPosition = (event) => {
+        initialX = event.x;
+        initialY = event.y;
+    };
+
+    /**
+     * Updates the current position of the mouse cursor.
+     *
+     * @param event MouseEvent.
+     */
+    const updateCurrentPosition = (event) => {
+        //
+        if (isDefaultPositioned) {
+            //
+            currentX = initialX - event.offsetX;
+            currentY = initialY - event.offsetY;
+
+            //
+            isDefaultPositioned = false;
+            return;
+        }
+
+        //
+        currentX += event.x - initialX;
+        currentY += event.y - initialY;
+    }
+
     const onMouseDown = (event) => {
-        // Sets the initial coordinates (X, Y) at the mouse down location.
-        initialY = event.screenY;
-        initialX = event.screenX;
+        // Sets the initial coordinates (X, Y) at the mouse down position.
+        updateInitialPosition(event);
 
         // Enables the possibility to move window.
         isMoving = true;
@@ -59,45 +94,38 @@
             return;
         }
 
-        //
-        const x = event.screenX;
-        const y = event.screenY;
+        updateCurrentPosition(event);
 
-        //
-        currentY += y - initialY;
-        currentX += x - initialX;
-
-        // the window cannot go beyond the visible edge on the left side
+        // The current position cannot go beyond the top of the screen.
         if (TOP_Y > currentY) {
             currentY = TOP_Y;
         }
 
-        //
+        // The current position cannot go beyond the bottom of the screen.
         if (BOTTOM_Y < currentY) {
             currentY = BOTTOM_Y;
         }
 
-        // the window cannot go beyond the visible edge on the right side
+        // the current position cannot go beyond the lef of the screen.
         if (LEFT_X > currentX) {
             currentX = LEFT_X;
         }
 
-        //
+        // the current position cannot go beyond the right of the screen.
         if (RIGHT_X < currentX) {
             currentX = RIGHT_X;
         }
 
-        //
         dispatch(
             "moveWindow", {
+                inDefaultPosition: isDefaultPositioned,
                 x: currentX,
                 y: currentY
             }
         );
 
-        //
-        initialX = x;
-        initialY = y;
+        // Sets the initial position as the current cursor position.
+        updateInitialPosition(event);
     };
 
     window.addEventListener("mouseup", onMouseUp);
@@ -106,26 +134,30 @@
 
 <div class="header" on:mousedown={onMouseDown}>
     <div class="header-container">
-
+        <h4>LiquidBounce</h4>
+        <Navigation/>
     </div>
 </div>
 
 <style lang="scss">
+    // TODO simplify
+    @import "../clickgui/src/styles/colors";
+    @import "../clickgui/src/styles/variables";
 
     .header {
-        height: 60px;
-        background-color: rgb(24, 24, 24);
-        border-radius: 5px 5px 0 0;
-
-        display: flex;
         align-items: center;
-        padding: 0 5px 0 5px;
+        background-color: $windowHeaderBackgroundColor;
+        border-bottom: 1px solid darkgray;
+        border-radius: $windowBorderRadius $windowBorderRadius 0 0;
         color: white;
+        display: flex;
+        height: 60px;
 
         &-container {
-
+            padding: 6px 9px 0 9px;
+            position: relative;
+            height: 100%;
+            width: 100%;
         }
     }
-
-
 </style>
