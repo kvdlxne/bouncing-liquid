@@ -1,5 +1,6 @@
 <script>
     import Header from "./logistics/Header.svelte";
+    import SideBar from "./logistics/SideBar.svelte";
 
     // The height of the rendered window.
     const WINDOW_HEIGHT = 540;
@@ -15,6 +16,9 @@
     //
     let y;
 
+    //
+    let selectedCategory;
+
     const handleMoveWindow = (event) => {
         const detail = event.detail;
 
@@ -24,13 +28,18 @@
         x = detail.x;
         y = detail.y;
     };
-
 </script>
 
 <div class="window">
     <div class="window-container {isDefaultPositioned ? 'centered' : 'moveable'}"
          style="--height: {WINDOW_HEIGHT}px; --width: {WINDOW_WIDTH}px; --x: {x}px; --y: {y}px;">
-        <Header height="{WINDOW_HEIGHT}" width="{WINDOW_WIDTH}" on:moveWindow={handleMoveWindow}/>
+
+        <Header height="{WINDOW_HEIGHT}"
+                width="{WINDOW_WIDTH}"
+                bind:currentCategory={selectedCategory}
+                on:moveWindow={handleMoveWindow}/>
+
+        <SideBar category="{selectedCategory}"/>
     </div>
 </div>
 
@@ -51,6 +60,8 @@
             height: var(--height);
             position: absolute;
             width: var(--width);
+            display: flex;
+            flex-direction: column;
         }
 
         .centered {

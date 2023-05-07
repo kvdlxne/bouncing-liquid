@@ -8,6 +8,9 @@
     // The width of the rendered window.
     export let width = 0;
 
+    //
+    export let currentCategory = null;
+
     // The space between the end of the available screen space of the window.
     const SPACE_SIZE = 3;
 
@@ -135,7 +138,7 @@
 <div class="header" on:mousedown={onMouseDown}>
     <div class="header-container">
         <h4>LiquidBounce</h4>
-        <Navigation/>
+        <Navigation bind:currentCategory/>
     </div>
 </div>
 
@@ -154,10 +157,14 @@
         height: 60px;
 
         &-container {
-            padding: 6px 9px 0 9px;
-            position: relative;
-            height: 100%;
+            padding: 0 10px 0 10px;
+            display: flex;
+            align-items: center;
             width: 100%;
+
+            h4 {
+                margin-right: auto;
+            }
         }
     }
 </style>
