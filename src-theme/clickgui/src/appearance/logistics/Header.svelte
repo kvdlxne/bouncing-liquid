@@ -2,30 +2,6 @@
     import { createEventDispatcher } from "svelte";
     import Navigation from "./Navigation.svelte";
 
-    // The height of the rendered window.
-    export let height = 0;
-
-    // The width of the rendered window.
-    export let width = 0;
-
-    //
-    export let currentCategory = null;
-
-    // The space between the end of the available screen space of the window.
-    const SPACE_SIZE = 3;
-
-    // The last possible upper value of the Y-axis.
-    const TOP_Y = SPACE_SIZE * 2;
-
-    // The last possible lower value of the Y-axis.
-    const BOTTOM_Y = (window.innerHeight - height) - SPACE_SIZE;
-
-    // The last possible left value of the X-axis.
-    const LEFT_X = SPACE_SIZE;
-
-    // The last possible right value of the X-axis.
-    const RIGHT_X = (window.innerWidth - width) - SPACE_SIZE;
-
     //
     const dispatch = createEventDispatcher();
 
@@ -99,26 +75,6 @@
 
         updateCurrentPosition(event);
 
-        // The current position cannot go beyond the top of the screen.
-        if (TOP_Y > currentY) {
-            currentY = TOP_Y;
-        }
-
-        // The current position cannot go beyond the bottom of the screen.
-        if (BOTTOM_Y < currentY) {
-            currentY = BOTTOM_Y;
-        }
-
-        // the current position cannot go beyond the lef of the screen.
-        if (LEFT_X > currentX) {
-            currentX = LEFT_X;
-        }
-
-        // the current position cannot go beyond the right of the screen.
-        if (RIGHT_X < currentX) {
-            currentX = RIGHT_X;
-        }
-
         dispatch(
             "moveWindow", {
                 inDefaultPosition: isDefaultPositioned,
@@ -138,7 +94,7 @@
 <div class="header" on:mousedown={onMouseDown}>
     <div class="header-container">
         <h4>LiquidBounce</h4>
-        <Navigation bind:currentCategory/>
+        <Navigation on:selectCategory/>
     </div>
 </div>
 
@@ -154,7 +110,7 @@
         border-radius: $windowBorderRadius $windowBorderRadius 0 0;
         color: white;
         display: flex;
-        height: 60px;
+        min-height: 60px;
 
         &-container {
             padding: 0 10px 0 10px;

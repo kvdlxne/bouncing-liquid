@@ -1,34 +1,43 @@
 <script>
-    import Client from "../../core/Client.svelte";
+    import { createEventDispatcher } from "svelte";
 
-    let categories = [];
+    //
+    const dispatch = createEventDispatcher();
 
-    export let currentCategory = null;
+    // An array of all registered categories.
+    const categoryArray = [];
 
-    // ONLY FOR TESTING IN BROWSER
-    // categories = [
-    //     "Combat",
-    //     "Player",
-    //     "Movement",
-    //     "Render",
-    //     "World",
-    //     "Misc",
-    //     "Exploit",
-    //     "Fun"
-    // ];
+    try {
+        client.getModuleManager().getCategories().forEach(category => {
+            categoryArray.push({
+                name: category.toLowerCase(),
+                readableName: category
+            })
+        });
+    } catch (error) {
+        console.debug(error);
+
+        // Uncomment lines below for browser testing.
+        for (let i = 0; i < 8; i++) {
+            categoryArray.push({
+                name: `test-${i}`,
+                readableName: `Test ${i}`
+            });
+        }
+    }
 
     const onMouseDown = (category) => {
-        currentCategory = category;
+        dispatch("selectCategory", {
+            selectedCategory: category
+        });
+        console.debug(`Selected ${category.name} category.`);
     };
 </script>
 
-<!-- Comment the line below for testing in browser. -->
-<Client bind:categories/>
-
 <div class="navigation">
-    {#each categories as category}
-        <div class="navigation-item" on:mousedown={() => onMouseDown(category)}>
-            {!category.readableName ? category : category.readableName}
+    {#each categoryArray as category}
+        <div class="navigation-item" on:click={() => onMouseDown(category)}>
+            {category.readableName}
         </div>
     {/each}
 </div>
@@ -43,7 +52,7 @@
             padding: 8px;
             margin: 2px;
             font-size: 15px;
-            transition: all 200ms ease-in-out;
+            transition: all 100ms ease-in;
             cursor: pointer;
 
             &:hover {
