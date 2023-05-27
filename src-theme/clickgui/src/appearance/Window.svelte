@@ -1,6 +1,8 @@
 <script>
     import Header from "./logistics/Header.svelte";
     import SideBar from "./logistics/SideBar.svelte";
+    import {getCategoryArray} from "../core/unsafe-client";
+    import ModuleView from "./views/ModuleView.svelte";
 
     // The height of the rendered window.
     const WINDOW_HEIGHT = 540;
@@ -32,8 +34,9 @@
     //
     let y = 0;
 
-    //
-    let selectedCategory;
+    // Currently selected category by default it is the first category present
+    // in the array of all registered categories.
+    let selectedCategory = getCategoryArray()[0];
 
     let selectedModule;
 
@@ -89,16 +92,14 @@
          style="--height: {WINDOW_HEIGHT}px; --width: {WINDOW_WIDTH}px; --x: {x}px; --y: {y}px;">
 
         <Header on:moveWindow={handleMoveWindow} on:selectCategory={handleSelectCategory}/>
-
-        {#if selectedCategory}
-            <SideBar {selectedCategory} on:selectModule={handleSelectModule}/>
+        <SideBar {...selectedCategory} on:selectModule={handleSelectModule}/>
+        {#if selectedModule}
+            <ModuleView {...selectedModule}/>
         {:else}
-            <div class="welcome-information">
+            <div class="">
 
             </div>
         {/if}
-
-
     </div>
 </div>
 

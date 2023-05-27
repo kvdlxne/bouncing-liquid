@@ -1,32 +1,11 @@
 <script>
     import { createEventDispatcher } from "svelte";
+    import { getCategoryArray } from "../../core/unsafe-client";
 
     //
     const dispatch = createEventDispatcher();
 
-    // An array of all registered categories.
-    const categoryArray = [];
-
-    try {
-        client.getModuleManager().getCategories().forEach(category => {
-            categoryArray.push({
-                name: category.toLowerCase(),
-                readableName: category
-            })
-        });
-    } catch (error) {
-        console.debug(error);
-
-        // Uncomment lines below for browser testing.
-        for (let i = 0; i < 8; i++) {
-            categoryArray.push({
-                name: `test-${i}`,
-                readableName: `Test ${i}`
-            });
-        }
-    }
-
-    const onMouseDown = (category) => {
+    const onClick = (category) => {
         dispatch("selectCategory", {
             selectedCategory: category
         });
@@ -35,8 +14,8 @@
 </script>
 
 <div class="navigation">
-    {#each categoryArray as category}
-        <div class="navigation-item" on:click={() => onMouseDown(category)}>
+    {#each getCategoryArray() as category}
+        <div class="navigation-item" on:click={() => onClick(category)}>
             {category.readableName}
         </div>
     {/each}

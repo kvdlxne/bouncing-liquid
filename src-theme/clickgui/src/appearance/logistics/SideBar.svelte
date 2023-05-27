@@ -1,72 +1,36 @@
 <script>
-    import { createEventDispatcher } from "svelte";
+    import {createEventDispatcher} from "svelte";
+    import {getModuleArray} from "../../core/unsafe-client";
 
-    //
-    export let selectedCategory = null;
+    // Identifier name of the selected category.
+    export let name;
 
-    //
+    // Hook to create an custom event.
     const dispatch = createEventDispatcher();
 
     // An array of all registered modules.
-    const moduleArray = [];
+    const moduleArray = getModuleArray();
 
-    try {
-        const iterator = client.getModuleManager().iterator();
-        while (iterator.hasNext()) {
-            const next = iterator.next();
-            const name = next.getName();
-            const category = next.getCategory().getReadableName();
-            moduleArray.push({
-                name: name.toLowerCase(),
-                readableName: name,
-                category: {
-                    name: category.toLowerCase(),
-                    readableName: category
-                },
-                isEnabled: next.getEnabled(),
-                native: next
-            });
-        }
-    } catch (error) {
-        console.debug(error);
-
-        // Uncomment lines below for browser testing.
-        for (let i = 0; i < 150; i++) {
-            const category = Math.floor(Math.random() * 8);
-            moduleArray.push({
-                name: `test-${i}`,
-                readableName: `Test ${i}`,
-                category: {
-                    name: `test-${category}`,
-                    readableName: `Test ${category}`
-                },
-                isEnabled: false,
-                native: null
-            });
-        }
-    }
+    //
+    let activeModuleName = "";
 
     // Filtered array of all registered modules by selected category.
-    $: filteredModuleArray = selectedCategory
-        ? moduleArray.filter(module => module.category.name === selectedCategory.name)
+    $: filteredModuleArray = name
+        ? moduleArray.filter(module => module.category.name === name)
         : [];
 
-    const onClick = () => {
-
-        dispatch("selectModule", {
-
-        });
+    const onClick = module => {
+        activeModuleName = module.name;
+        dispatch("selectModule", {selectedModule: module});
     };
 </script>
 
 <div class="side-bar">
-    <div class="side-bar-container">
-        {#each filteredModuleArray as {name, readableName}, name}
-            <div class="side-bar-container-item" on:click={() => onClick()}>
-                {readableName}
-            </div>
-        {/each}
-    </div>
+    {#each filteredModuleArray as module}
+        <div class="side-bar-item" class:active={activeModuleName === module.name} on:click={() => onClick(module)}>
+            {module.readableName}
+        </div>
+    {/each}
 </div>
 
 <style lang="scss">
@@ -78,25 +42,30 @@
         height: 100%;
         background-color: $windowSideBarBackgroundColor;
         color: white;
-        border-right: 1px solid darkgray;
+        border-right: 2px solid #0a0a0a;
         border-bottom-left-radius: $windowBorderRadius;
         overflow-y: auto;
         overflow-x: hidden;
 
-        &-container {
-            padding: 6px;
+        &-item {
+            padding: 8px 0 8px 12px;
+            margin: 2px 0 4px 0;
+            font-size: 14px;
+            transition: all 80ms ease-in;
+            cursor: pointer;
 
-            &-item {
-                padding: 6px;
-                margin: 1px;
-                font-size: 14px;
-                transition: all 80ms ease-in;
-                cursor: pointer;
-
-                &:hover {
-                    color: $liquidBounceRepresentativeColor;
-                }
+            &:first-child {
+                margin-top: 0;
             }
+
+            &:hover:not(.active) {
+                background-color: #2d2d2d;
+            }
+        }
+
+        .active {
+            border-left: 2px red solid;
+            background-color: #323232;
         }
     }
 </style>

@@ -106,7 +106,7 @@
     .header {
         align-items: center;
         background-color: $windowHeaderBackgroundColor;
-        border-bottom: 1px solid darkgray;
+        border-bottom: 2px solid #0a0a0a;
         border-radius: $windowBorderRadius $windowBorderRadius 0 0;
         color: white;
         display: flex;
